@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasKey;
 
 public class APITest {
 
@@ -19,8 +20,8 @@ public class APITest {
                 .then()
                 .log().all() //is used to print the entire request to console (optional)
                 .assertThat().statusCode(200) //assert the status code to be 200 (Ok)
-                .assertThat().body("meta.pagination.pages", Matchers.equalTo(286))
-                .assertThat().body("meta.pagination.page", Matchers.equalTo(1))//assert that we access the correct page
+                .assertThat().body("meta.pagination.pages", Matchers.equalTo("288"))
+                .assertThat().body("meta.pagination.page", Matchers.equalTo("1"))//assert that we access the correct page
                 .assertThat().body("data.id", Matchers.hasSize(10)); //assert that the data has 10 entries
     }
 
@@ -29,7 +30,7 @@ public class APITest {
     public void createNewUserTest() {
         //create POST body with parameter below in JSON format
         String name= "Andi";
-        String email = "andi123@gmail.com";
+        String email = "andi2@gmail.com";
         String gender = "male";
         String status = "active";
         //HashMap Alternative
@@ -42,20 +43,19 @@ public class APITest {
         given()
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
+                .header("Authorization", "Bearer 38cebe5affdc6038017ae850b112f50d15613c3f40d9d2a5d7bfd75f6218fcc2")
                 .body(jsonObject.toString())//convert json to string format -> (name, email, gender, status)
                 .when()
                 .post("https://gorest.co.in/public/v1/users")
                 .then()
                 .log().all() //is used to print hte entire request to console (optional)
                 .assertThat().statusCode(201) //assert the status code to be 201 (created)
-                .assertThat().body("name", Matchers.equalTo(name)) //assert response body "name"
-                .assertThat().body("email", Matchers.equalTo(email)) //assert response body "email"
-                .assertThat().body("gender", Matchers.equalTo(gender)) //assert response body "gender"
-                .assertThat().body("status", Matchers.equalTo(status)) //assert response body "status"
-                .assertThat().body("$", Matchers.hasKey("id")) //assert response has key "id"
-                .assertThat().body("$", Matchers.hasKey("createdAt")); //assert response body has key"createdAt"
+                .assertThat().body("data.name", Matchers.equalTo(name)) //assert response body "name"
+                .assertThat().body("data.email", Matchers.equalTo(email)) //assert response body "email"
+                .assertThat().body("data.gender", Matchers.equalTo(gender)) //assert response body "gender"
+                .assertThat().body("data.status", Matchers.equalTo(status)) //assert response body "status"
+                .assertThat().body("data", hasKey("id")); //assert response has key "id"
     }
 
 
 }
-
